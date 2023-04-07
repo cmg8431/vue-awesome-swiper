@@ -7,14 +7,13 @@
 import { DirectiveOptions, VNode } from 'vue'
 import { DirectiveBinding } from 'vue/types/options'
 import Swiper, { SwiperOptions } from 'swiper'
-import { SWIPER_INSTANCE_NAME, DEFAULT_CLASSES, ComponentEvents, ComponentPropNames } from './constants'
+import { DEFAULT_CLASSES, CoreNames, ComponentEvents, ComponentPropNames } from './constants'
 import { handleClickSlideEvent, bindSwiperEvents } from './event'
 import { kebabcase } from './utils'
 
 const INSTANCE_NAME_KEY = 'instanceName'
 
-export default getDirectiveByOptions()
-export function getDirectiveByOptions (globalOptions?: SwiperOptions): DirectiveOptions {
+export default function getDirective(SwiperClass: typeof Swiper, globalOptions?: SwiperOptions): DirectiveOptions {
 
   const getStandardisedOptionByAttrs = (vnode: VNode, key: string): any => {
     const value = vnode.data?.attrs?.[key]
@@ -29,7 +28,7 @@ export function getDirectiveByOptions (globalOptions?: SwiperOptions): Directive
       binding.arg ||
       getStandardisedOptionByAttrs(vnode, INSTANCE_NAME_KEY) ||
       element.id ||
-      SWIPER_INSTANCE_NAME
+      CoreNames.SwiperInstance
     )
   }
 
@@ -81,11 +80,14 @@ export function getDirectiveByOptions (globalOptions?: SwiperOptions): Directive
       const vueContext = context as any
       let swiper: Swiper = vueContext?.[instanceName]
 
-      if (!swiper) {
-        swiper = new Swiper(element, swiperOptions)
+      // Swiper will destroy but not delete instance, when used <keep-alive>
+      if (!swiper || (swiper as any).destroyed) {
+        swiper = new SwiperClass(element, swiperOptions)
         vueContext[instanceName] = swiper
         bindSwiperEvents(swiper, emitEvent)
         emitEvent(ComponentEvents.Ready, swiper)
+        // MARK: Reinstance when the nexttick with <keep-alive>
+        // Vue.nextTick(instancing) | setTimeout(instancing)
       }
     },
     // On options changed or DOM updated

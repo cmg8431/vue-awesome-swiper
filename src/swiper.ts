@@ -1,24 +1,25 @@
-<template>
-  <div class="swiper-container" @click="handleSwiperClick($event)">
-    <slot name="parallax-bg" />
-    <div :class="wrapperClass">
-      <slot />
-    </div>
-    <slot name="pagination" />
-    <slot name="button-prev" />
-    <slot name="button-next" />
-    <slot name="scrollbar" />
-  </div>
-</template>
+/**
+ * @file vue-awesome-swiper
+ * @module SwiperComponent
+ * @author Surmon <https://github.com/surmon-china>
+ */
 
-<script lang="ts">
-  import Vue, { PropType } from 'vue'
-  import Swiper, { SwiperOptions } from 'swiper'
-  import { SWIPER_COMPONENT_NAME, DEFAULT_CLASSES, SWIPER_INSTANCE_NAME, ComponentPropNames, ComponentEvents } from './constants'
-  import { handleClickSlideEvent, bindSwiperEvents } from './event'
+import Vue, { PropType, VNode, CreateElement } from 'vue'
+import Swiper, { SwiperOptions } from 'swiper'
+import { DEFAULT_CLASSES, CoreNames, ComponentPropNames, ComponentEvents } from './constants'
+import { handleClickSlideEvent, bindSwiperEvents } from './event'
 
-  export default Vue.extend({
-    name: SWIPER_COMPONENT_NAME,
+enum SlotNames {
+  ParallaxBg = 'parallax-bg',
+  Pagination = 'pagination',
+  Scrollbar = 'scrollbar',
+  PrevButton = 'button-prev',
+  NextButton = 'button-next'
+}
+
+export default function getSwiperComponent(SwiperClass: typeof Swiper) {
+  return Vue.extend({
+    name: CoreNames.SwiperComponent,
     props: {
       defaultOptions: {
         type: Object as PropType<SwiperOptions>,
@@ -53,17 +54,17 @@
     },
     data() {
       return {
-        [SWIPER_INSTANCE_NAME]: null as Swiper | null
+        [CoreNames.SwiperInstance as const]: null as Swiper | null
       }
     },
     computed: {
       swiperInstance: {
         cache: false,
         set(swiper: Swiper) {
-          this[SWIPER_INSTANCE_NAME] = swiper
+          this[CoreNames.SwiperInstance] = swiper
         },
         get(): Swiper | null {
-          return this[SWIPER_INSTANCE_NAME]
+          return this[CoreNames.SwiperInstance]
         }
       },
       swiperOptions(): SwiperOptions {
@@ -72,32 +73,6 @@
       wrapperClass(): string {
         return this.swiperOptions.wrapperClass || DEFAULT_CLASSES.wrapperClass
       }
-    },
-    mounted() {
-      if (!this.swiperInstance) {
-        this.initSwiper()
-      }
-    },
-    activated() {
-      this.update()
-    },
-    updated() {
-      this.update()
-    },
-    beforeDestroy() {
-      // https://github.com/surmon-china/vue-awesome-swiper/commit/2924a9d4d3d1cf51c0d46076410b1f804b2b8a43#diff-7f4e0261ac562c0f354cb91a1ca8864f
-      this.$nextTick(() => {
-        if (this[ComponentPropNames.AutoDestroy] && this.swiperInstance) {
-          // https://github.com/surmon-china/vue-awesome-swiper/pull/341
-          // https://github.com/surmon-china/vue-awesome-swiper/issues/340
-          if ((this.swiperInstance as any).initialized) {
-            this.swiperInstance?.destroy?.(
-              this[ComponentPropNames.DeleteInstanceOnDestroy],
-              this[ComponentPropNames.CleanupStylesOnDestroy]
-            )
-          }
-        }
-      })
     },
     methods: {
       // Feature: click event
@@ -108,7 +83,7 @@
           this.$emit.bind(this)
         )
       },
-      autoReLoop() {
+      autoReLoopSwiper() {
         if (this.swiperInstance && this.swiperOptions.loop) {
           // https://github.com/surmon-china/vue-awesome-swiper/issues/593
           // https://github.com/surmon-china/vue-awesome-swiper/issues/544
@@ -118,17 +93,29 @@
           swiper?.loopCreate?.()
         }
       },
-      update() {
+      updateSwiper() {
         if (this[ComponentPropNames.AutoUpdate] && this.swiperInstance) {
-          this.autoReLoop()
+          this.autoReLoopSwiper()
           this.swiperInstance?.update?.()
           this.swiperInstance.navigation?.update?.()
           this.swiperInstance.pagination?.render?.()
           this.swiperInstance.pagination?.update?.()
         }
       },
+      destroySwiper() {
+        if (this[ComponentPropNames.AutoDestroy] && this.swiperInstance) {
+          // https://github.com/surmon-china/vue-awesome-swiper/pull/341
+          // https://github.com/surmon-china/vue-awesome-swiper/issues/340
+          if ((this.swiperInstance as any).initialized) {
+            this.swiperInstance?.destroy?.(
+              this[ComponentPropNames.DeleteInstanceOnDestroy],
+              this[ComponentPropNames.CleanupStylesOnDestroy]
+            )
+          }
+        }
+      },
       initSwiper() {
-        this.swiperInstance = new Swiper(
+        this.swiperInstance = new SwiperClass(
           this.$el as HTMLElement,
           this.swiperOptions
         )
@@ -141,6 +128,42 @@
           this.swiperInstance
         )
       }
+    },
+    mounted() {
+      if (!this.swiperInstance) {
+        this.initSwiper()
+      }
+    },
+    // Update swiper when the parent component activated with `keep-alive`.
+    activated() {
+      this.updateSwiper()
+    },
+    updated() {
+      this.updateSwiper()
+    },
+    beforeDestroy() {
+      // https://github.com/surmon-china/vue-awesome-swiper/commit/2924a9d4d3d1cf51c0d46076410b1f804b2b8a43#diff-7f4e0261ac562c0f354cb91a1ca8864f
+      this.$nextTick(this.destroySwiper)
+    },
+    render(createElement: CreateElement): VNode {
+      return createElement('div',
+        {
+          staticClass: DEFAULT_CLASSES.containerClass,
+          on: {
+            click: this.handleSwiperClick
+          }
+        },
+        [
+          this.$slots[SlotNames.ParallaxBg],
+          createElement('div', {
+            class: this.wrapperClass
+          }, this.$slots.default),
+          this.$slots[SlotNames.Pagination],
+          this.$slots[SlotNames.PrevButton],
+          this.$slots[SlotNames.NextButton],
+          this.$slots[SlotNames.Scrollbar]
+        ]
+      )
     }
   })
-</script>
+}

@@ -1,21 +1,22 @@
 <p align="center">
   <a href="https://swiperjs.com" target="_blank">
-    <img width="60px" src="https://github.surmon.me/images/common/swiper-logo.svg" />
+    <img width="77px" src="https://github.surmon.me/images/common/swiper-logo.svg" />
   </a>
-  <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+  <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
   <a href="https://vuejs.org" target="_blank">
-    <img width="60px" src="https://github.surmon.me/images/common/vue-logo.png" />
+    <img width="77px" src="https://github.surmon.me/images/common/vue-logo.png" />
   </a>
 </p>
 
 # vue-awesome-swiper
+![vue](https://img.shields.io/badge/MADE%20WITH-VUE-42a97a?style=for-the-badge&labelColor=35495d)
 [![GitHub stars](https://img.shields.io/github/stars/surmon-china/vue-awesome-swiper.svg?style=for-the-badge)](https://github.com/surmon-china/vue-awesome-swiper/stargazers)
-![npm](https://img.shields.io/npm/v/vue-awesome-swiper?style=for-the-badge)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/surmon-china/vue-awesome-swiper/Publish?label=publish&style=for-the-badge)
-[![GitHub issues](https://img.shields.io/github/issues/surmon-china/vue-awesome-swiper.svg?style=for-the-badge)](https://github.com/surmon-china/vue-awesome-swiper/issues)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/surmon-china/vue-awesome-swiper)
+[![npm](https://img.shields.io/npm/v/vue-awesome-swiper?color=c7343a&label=npm&style=for-the-badge)](https://www.npmjs.com/package/vue-awesome-swiper)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/surmon-china/vue-awesome-swiper/Publish?label=publish&style=for-the-badge)](https://github.com/surmon-china/vue-awesome-swiper/actions?query=workflow%3APublish)
+[![GitHub issues](https://img.shields.io/github/issues-raw/surmon-china/vue-awesome-swiper.svg?style=for-the-badge)](https://github.com/surmon-china/vue-awesome-swiper/issues)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=for-the-badge)](https://github.com/surmon-china/vue-awesome-swiper/blob/master/LICENSE)
 
-[![NPM](https://nodei.co/npm/vue-awesome-swiper.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/vue-awesome-swiper/)
+[![NPM](https://nodei.co/npm/vue-awesome-swiper.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/vue-awesome-swiper)
 
 **[Swiper](https://swiperjs.com)** component for Vue.
 
@@ -26,8 +27,8 @@ Old versions:
 
 ### Example
 - [Online examples](https://github.surmon.me/vue-awesome-swiper)
-- [CDN example](https://jsfiddle.net/surmon/hsnmeyct/)
-- [Nuxt.js example code](https://github.com/surmon-china/surmon-china.github.io/tree/source/projects/vue-awesome-swiper/nuxt)
+- [CDN example](https://jsfiddle.net/surmon/kLtj6h3p/)
+- [SSR example code](https://github.com/surmon-china/surmon-china.github.io/tree/source/projects/vue-awesome-swiper/nuxt)
 - [TypeScript & composition-api example code](https://github.com/surmon-china/surmon-china.github.io/blob/source/projects/vue-awesome-swiper/examples/00-typescript-composition-api.vue)
 
 ---
@@ -97,13 +98,9 @@ The effect of the two ways and the difference in the applicable environment [is 
 
 ### Component
 
-```vue
+```html
 <template>
-  <swiper
-    ref="mySwiper"
-    :options="swiperOptions"
-    @some-swiper-event="callback"
-  >
+  <swiper ref="mySwiper" :options="swiperOptions">
     <swiper-slide>Slide 1</swiper-slide>
     <swiper-slide>Slide 2</swiper-slide>
     <swiper-slide>Slide 3</swiper-slide>
@@ -122,7 +119,7 @@ The effect of the two ways and the difference in the applicable environment [is 
           pagination: {
             el: '.swiper-pagination'
           },
-          // Some Swiper options/callbacks...
+          // Some Swiper option/callback...
         }
       }
     },
@@ -142,9 +139,9 @@ The effect of the two ways and the difference in the applicable environment [is 
 
 ### Directive
 
-```vue
+```html
 <template>
-  <div v-swiper:mySwiper="swiperOption" @some-swiper-event="callback">
+  <div v-swiper:mySwiper="swiperOption">
     <div class="swiper-wrapper">
       <div class="swiper-slide" :key="banner" v-for="banner in banners">
         <img :src="banner">
@@ -180,6 +177,7 @@ The effect of the two ways and the difference in the applicable environment [is 
 ### Swiper component API
 
 ```html
+<!-- All events/props support camelCase or kebab-case. -->
 <swiper
   :options="swiperOptionsObject"
   :auto-update="true"
@@ -188,7 +186,15 @@ The effect of the two ways and the difference in the applicable environment [is 
   :cleanup-styles-on-destroy="true"
   @ready="handleSwiperReadied"
   @click-slide="handleClickSlide"
-  @some-swiper-event="doSomethingWhenSwiperEventTriggered"
+/>
+
+<!-- vue-awesome-swiper converts all Swiper events into component/directive events, e.g.: -->
+<swiper
+  @slide-change-transition-start="onSwiperSlideChangeTransitionStart"
+  @slideChangeTransitionStart="onSwiperSlideChangeTransitionStart"
+  @slideChangeTransitionEnd="..."
+  @transitionStart="..."
+  ...
 />
 ```
 ```ts
@@ -211,7 +217,32 @@ function handleSwiperReadied(swiper: Swiper) {
 
 // `@click-slide` event has special treatment for Swiper's loop mode, which is still available in loop mode
 function handleClickSlide(index: number, reallyIndex: number | null) {
-  console.log('click slide!', index, reallyIndex)
+  console.log('Click slide!', index, reallyIndex)
+}
+```
+
+### Swiper directive API
+
+Based on the exact same as the component API.
+
+In the `directive` mode, the Swiper instance will be mounted in the parent's component context use the default name`$swiper`. In order to implement multiple swipers in a context, the `directive` has an additional name called `instanceName` API, through this API, you can easily control the name of each swiper mount context.
+
+```html
+<div v-swiper="swiperOptionsObject" />
+<div v-swiper:secondSwiper="swiperOptionsObject" />
+<div v-swiper:[dynamicSwiperName]="swiperOptionsObject" />
+<div v-swiper="swiperOptionsObject" instance-name="fourthSwiper" />
+```
+```ts
+export dafault {
+  data() {
+    return {
+      dynamicSwiperName: 'thirdSwiper'
+    }
+  },
+  mounted() {
+    console.log('Swiper instances:', this.$swiper, this.secondSwiper, this.thirdSwiper, this.fourthSwiper)
+  }
 }
 ```
 
@@ -224,12 +255,39 @@ Swiper's API and configuration can be used.
 
 ---
 
+### [Custom Build with Swiper](https://swiperjs.com/api/#custom-build)
+
+```ts
+import Vue from 'vue'
+import { Swiper as SwiperClass, Pagination, Mousewheel, Autoplay } from 'swiper/js/swiper.esm'
+import getAwesomeSwiper from 'vue-awesome-swiper/dist/exporter'
+
+// Swiper modules
+SwiperClass.use([Pagination, Mousewheel, Autoplay])
+
+// -------------------------------------------------
+
+// Global use
+Vue.use(getAwesomeSwiper(SwiperClass))
+
+// -------------------------------------------------
+
+// Or local component
+const { Swiper, SwiperSlide } = getAwesomeSwiper(SwiperClass)
+export default {
+  components: {
+    Swiper,
+    SwiperSlide
+  }
+}
+```
+
 ### Custom Swiper plugin
 
 ```javascript
-import Swiper from 'swiper'
+import SwiperClass from 'swiper'
 
-Swiper.use({
+SwiperClass.use({
   name: 'pluginName',
   params: {
     pluginSwitch: false,

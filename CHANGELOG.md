@@ -2,7 +2,53 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [4.0.0-rc.0](https://github.com/surmon-china/vue-awesome-swiper/compare/v3.1.3...v4.0.0-rc.0) (2020-03-19)
+### 4.1.1 (2020-04-21)
+
+**Fixed**
+- [#632](https://github.com/surmon-china/vue-awesome-swiper/issues/632) Slide component auto update when `SwiperComponent.autuUpdate`
+
+### 4.1.0 (2020-03-29)
+
+**Update**
+- Upgrade abc-factory
+- Update test spec
+- Vue SFC component to `render`
+- Move `types` to `dist`
+
+**Features**
+- Support Custom build with Swiper
+
+**Fixed**
+- [#422](https://github.com/surmon-china/vue-awesome-swiper/issues/422)
+- [#527](https://github.com/surmon-china/vue-awesome-swiper/issues/527)
+- [#621](https://github.com/surmon-china/vue-awesome-swiper/issues/621)
+
+### [4.0.4](https://github.com/surmon-china/vue-awesome-swiper/compare/v4.0.3...v4.0.4) (2020-03-22)
+
+**Fixed**
+- Event `click-slide` condition with `!swiper.destroyed`
+
+### [4.0.3](https://github.com/surmon-china/vue-awesome-swiper/compare/v4.0.2...v4.0.3) (2020-03-21)
+
+**Fixed**
+- Directive instancing when `swiper.destroyed`
+
+### [4.0.1](https://github.com/surmon-china/vue-awesome-swiper/compare/v4.0.0...v4.0.1) (2020-03-20)
+
+**Fixed**
+- Publish CI scripts `build`
+
+### [4.0.0-rc.1](https://github.com/surmon-china/vue-awesome-swiper/compare/v4.0.0-rc.0...v4.0.0-rc.1) (2020-03-20)
+
+**Fixed**
+- `@clicks-lide` get event path from `event.composedPath()` ~~`event.path`~~
+
+**Update**
+- Rename `update` to `updateSwiper`
+- Rename `destroy` to `destroySwiper`
+- Rename `autoReLoop` to `autoReLoopSwiper`
+
+### [4.0.0-rc.0](https://github.com/surmon-china/vue-awesome-swiper/compare/v3.1.3...v4.0.0-rc.0) (2020-03-19)
 
 **Breaking change**
 - Remove vue1 support
